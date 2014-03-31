@@ -1,0 +1,323 @@
+<?xml version="1.0"?>
+<project name="Space Turtles" default="make">
+	<property name="build.dir" value="build"/>
+	<property name="source.dir" value="source"/>
+	<property name="apis.dir" value="apis"/>
+	<property name="resources.dir" value="resources"/>
+	<property name="downloads.dir" value="downloads"/>
+	<property name="versions.dir" value="versions"/>
+	<property name="forge.dir" value="forge"/>
+	<property name="mcp.dir" value="${forge.dir}/mcp"/>
+	<property name="mcp.bin.dir" value="${mcp.dir}/bin"/>
+	<property name="mcp.minecraft.dir" value="${mcp.dir}/src/minecraft"/>
+	<property name="mcp.resources.dir" value="${mcp.dir}/bin/minecraft"/>
+	
+	<property file="mod.properties" prefix="mod"/>
+	
+	<condition property="devel" value="false">
+		<not>
+			<isset property="devel"/>
+		</not>
+	</condition>
+	
+	<condition property="mod.version" value="${mod.version.major}.${mod.version.minor}.${mod.version.build}">
+		<not>
+			<istrue value="${devel}" />  
+		</not>
+	</condition>
+	
+	<condition property="mod.version" value="${mod.version.major}.${mod.version.minor}.${mod.version.build}-dev${mod.version.devel}">
+		<istrue value="${devel}" />
+	</condition>
+	
+	<condition property="mod.latest" value="">
+		<not>
+			<istrue value="${devel}" />  
+		</not>
+	</condition>
+	
+	<condition property="mod.latest" value="-dev">
+		<istrue value="${devel}" />
+	</condition>
+	
+	<condition property="is-devel">  
+		<istrue value="${devel}" />  
+	</condition>  
+
+	<property name="forge.source.version" value="${mod.mc.version}-${mod.forge.version}"/>
+	<property name="forge.source.name" value="forge-${forge.source.version}-src.zip"/>
+	<property name="forge.download.file" value="${downloads.dir}/${forge.source.name}"/>
+	<property name="forge.properties.file" value="${forge.dir}/forgeversion.properties"/>
+	
+	<property file="${forge.properties.file}"/>
+	
+	<available property="mcp.bin.exists" file="${mcp.bin.dir}"/>
+	<available property="forge.dir.exists" file="${forge.dir}"/>
+	<available property="forge.properties.file.exists" file="${forge.properties.file}"/>
+	<available property="forge.download.file.exists" file="${forge.download.file}"/>
+	
+	<condition property="forge.out-of-date">
+		<not>
+			<and>
+				<isset property="forge.dir.exists"/>
+				<equals arg1="${mod.forge.version}" arg2="${forge.major.number}.${forge.minor.number}.${forge.revision.number}.${forge.build.number}"/>
+			</and>
+		</not>
+	</condition>
+	
+	<condition property="mod.logo-file" value="">
+		<not>
+			<isset property="mod.logo-file"/>
+		</not>
+	</condition>
+	
+	<condition property="mod.url" value="">
+		<not>
+			<isset property="mod.url"/>
+		</not>
+	</condition>
+	
+	<condition property="mod.update-url" value="">
+		<not>
+			<isset property="mod.update-url"/>
+		</not>
+	</condition>
+	
+	<condition property="mod.authors" value="[]">
+		<not>
+			<isset property="mod.authors"/>
+		</not>
+	</condition>
+	
+	<condition property="mod.credits" value="">
+		<not>
+			<isset property="mod.credits"/>
+		</not>
+	</condition>
+	
+	<condition property="mod.parent" value="">
+		<not>
+			<isset property="mod.parent"/>
+		</not>
+	</condition>
+	
+	<condition property="mod.screenshots" value="[]">
+		<not>
+			<isset property="mod.screenshots"/>
+		</not>
+	</condition>
+	
+	<condition property="mod.dependencies" value="[]">
+		<not>
+			<isset property="mod.dependencies"/>
+		</not>
+	</condition>
+
+	<!-- Download necessary files -->
+	<target name="download-files" depends="download-forge"/>
+		
+	<!-- Download forge (if it doesn't exist) -->
+	<target name="download-forge" unless="forge.download.file.exists" if="forge.out-of-date">
+		<mkdir dir="${downloads.dir}"/>
+		<get src="http://files.minecraftforge.net/maven/net/minecraftforge/forge/${forge.source.version}/${forge.source.name}" dest="${downloads.dir}" usetimestamp="True"/>
+	</target>
+
+	<!-- Setup mcp and forge -->
+	<target name="setup" depends="download-files" if="forge.out-of-date">
+		<mkdir dir="${forge.dir}"/>
+		<unzip dest="./" src="${forge.download.file}"/>
+
+		<!-- Fix executable permissions -->
+		<chmod dir="${forge.dir}" perm="ugo+rx" includes="**.sh"/>
+
+		<antcall target="install" />
+	</target>
+
+	<!-- Install forge -->
+	<target name="install">
+		<exec dir="${forge.dir}" executable="cmd" osfamily="windows">
+			<arg line="/c install.cmd"/>
+		</exec>
+
+		<exec dir="${forge.dir}" executable="sh" osfamily="unix">
+			<arg value="install.sh"/>
+		</exec>
+	</target>
+
+	<!-- Recompile mcp -->
+	<target name="recompile">
+		<exec dir="${mcp.dir}" executable="cmd" osfamily="windows">
+			<arg line="/c recompile.bat" />
+		</exec>
+		<exec dir="${mcp.dir}" executable="sh" osfamily="unix">
+			<arg line="recompile.sh" />
+		</exec>
+	</target>
+
+	<!-- Reobfuscate mcp -->
+	<target name="reobfuscate">
+		<exec dir="${mcp.dir}" executable="cmd" osfamily="windows">
+			<arg line="/c reobfuscate_srg.bat" />
+		</exec>
+		<exec dir="${mcp.dir}" executable="bash" osfamily="unix">
+			<arg line="reobfuscate_srg.sh" />
+		</exec>
+	</target>
+
+	<!-- Run mcp -->
+	<target name="startclient">
+		<!-- Start Client -->
+		<exec dir="${mcp.dir}" executable="cmd" osfamily="windows">
+			<arg line="/c startclient.bat"/>
+		</exec>
+
+		<exec dir="${mcp.dir}" executable="sh" osfamily="unix">
+			<arg value="startclient.sh"/>
+		</exec>
+	</target>
+	
+	<!-- Make if the mcp bin directory is missing -->
+	<target name="make-if-missing" unless="mcp.bin.exists">
+		<antcall target="make" />
+	</target>
+
+	<target name="replace-source-tokens">
+		<replace dir="${mcp.minecraft.dir}">
+			<present present="both" targetdir="${source.dir}" />
+			<replacefilter token="MOD:NAME" value="${mod.name}" />
+			<replacefilter token="MOD:ID" value="${mod.id}" />
+			<replacefilter token="MOD:NAME" value="${mod.name}" />
+			<replacefilter token="MOD:FILENAME" value="${mod.filename}" />
+			<replacefilter token="MOD:DESCRIPTION" value="${mod.description}" />
+			<replacefilter token="MOD:VERSION" value="${mod.version}" />
+			<replacefilter token="MOD:MC:VERSION" value="${mod.mc.version}" />
+			<replacefilter token="MOD:LOGOFILE" value="${mod.logo-file}" />
+			<replacefilter token="MOD:URL" value="${mod.url}" />
+			<replacefilter token="MOD:UPDATEURL" value="${mod.update-url}" />
+			<replacefilter token="MOD:AUTHORS" value="${mod.authors}" />
+			<replacefilter token="MOD:CREDITS" value="${mod.credits}" />
+			<replacefilter token="MOD:PARENT" value="${mod.parent}" />
+			<replacefilter token="MOD:SCREENSHOTS" value="${mod.screenshots}" />
+			<replacefilter token="MOD:DEPENDENCIES" value="${mod.dependencies}" />
+		</replace>
+	</target>
+
+	<target name="replace-build-tokens">
+		<replace dir="${build.dir}">
+			<replacefilter token="MOD:NAME" value="${mod.name}" />
+			<replacefilter token="MOD:ID" value="${mod.id}" />
+			<replacefilter token="MOD:NAME" value="${mod.name}" />
+			<replacefilter token="MOD:FILENAME" value="${mod.filename}" />
+			<replacefilter token="MOD:DESCRIPTION" value="${mod.description}" />
+			<replacefilter token="MOD:VERSION" value="${mod.version}" />
+			<replacefilter token="MOD:MC:VERSION" value="${mod.mc.version}" />
+			<replacefilter token="MOD:LOGOFILE" value="${mod.logo-file}" />
+			<replacefilter token="MOD:URL" value="${mod.url}" />
+			<replacefilter token="MOD:UPDATEURL" value="${mod.update-url}" />
+			<replacefilter token="MOD:AUTHORS" value="${mod.authors}" />
+			<replacefilter token="MOD:CREDITS" value="${mod.credits}" />
+			<replacefilter token="MOD:PARENT" value="${mod.parent}" />
+			<replacefilter token="MOD:SCREENSHOTS" value="${mod.screenshots}" />
+			<replacefilter token="MOD:DEPENDENCIES" value="${mod.dependencies}" />
+		</replace>
+	</target>
+
+	<!-- Copy source into mcp dir -->
+	<target name="prep-source">
+		<copy todir="${mcp.minecraft.dir}" verbose="true">
+			<fileset dir="${source.dir}" />
+			<fileset dir="${apis.dir}" />
+		</copy>
+		<antcall target="replace-source-tokens"/>
+	</target>
+
+	<!-- Copy resources into mcp dir -->
+	<target name="prep-resources">
+		<copy todir="${mcp.resources.dir}" verbose="true">
+			<fileset dir="${resources.dir}" />
+		</copy>
+		<antcall target="replace-source-tokens"/>
+	</target>
+
+	<!-- Copy source into mcp dir -->
+	<target name="prep-build">
+		<mkdir dir="${build.dir}"/>
+		<copy todir="${build.dir}" verbose="true">
+			<fileset dir="${resources.dir}" />
+		</copy>
+		<antcall target="replace-build-tokens"/>
+		<copy todir="${build.dir}" verbose="true">
+			<fileset dir="${mcp.dir}/reobf/minecraft">
+				<include name="**/net/tozcentral*/**"/>
+				<!--exclude name="**/cpw/**"/>
+				<exclude name="**/ibxm/**"/>
+				<exclude name="**/paulscode/**"/-->
+			</fileset>
+		</copy>
+	</target>
+
+	<!-- Create jar file -->
+	<target name="build-jar" if="mod.jar">
+		<jar destfile="${versions.dir}/${mod.filename}-${mod.mc.version}-${mod.version}.jar" basedir="${build.dir}"/>
+		<jar destfile="${versions.dir}/${mod.filename}-${mod.mc.version}${mod.latest}.jar" basedir="${build.dir}"/>
+	</target>
+
+	<!-- Create zip file -->
+	<target name="build-zip" unless="mod.jar">
+		<zip destfile="${versions.dir}/${mod.filename}-${mod.mc.version}-${mod.version}.zip" basedir="${build.dir}"/>
+		<zip destfile="${versions.dir}/${mod.filename}-${mod.mc.version}${mod.latest}.zip" basedir="${build.dir}"/>
+	</target>
+
+	<target name="increment-build" unless="is-devel">
+		<propertyfile file="mod.properties">
+			<entry key="version.build" type="int" operation="+" default="1"/>
+			<entry key="version.devel" type="int" operation="=" default="1"/>
+		</propertyfile>
+	</target>
+
+	<target name="increment-devel" if="is-devel">
+		<propertyfile file="mod.properties">
+			<entry key="version.devel" type="int" operation="+" default="1"/>
+		</propertyfile>
+	</target>
+    
+    <target name="clean-forge">
+        <delete dir="${forge.dir}"/>
+    </target>
+    
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+		<!--delete verbose="true">
+			<fileset dir="${mcp.minecraft.dir}">
+				<present present="both" targetdir="${source.dir}" /> 
+				<present present="both" targetdir="${apis.dir}" /> 
+			</fileset>
+		</delete-->
+    </target>
+	
+	<target name="make" depends="setup">
+		<antcall target="prep-source" />
+		<antcall target="prep-resources" />
+		<antcall target="recompile" />
+	</target>
+	
+	<target name="run" depends="make-if-missing">
+		<antcall target="startclient" />
+	</target>
+	
+	<target name="build" depends="setup">
+		<!-- Prep for the build -->
+		<antcall target="clean" />
+		<antcall target="prep-source" />
+		<antcall target="recompile" />
+		<antcall target="reobfuscate" />
+		<antcall target="prep-build" />
+		
+		<mkdir dir="${versions.dir}"/>
+		<antcall target="build-jar" />
+		<antcall target="build-zip" />
+		
+		<antcall target="increment-build" />
+		<antcall target="increment-devel" />
+	</target>
+</project>
