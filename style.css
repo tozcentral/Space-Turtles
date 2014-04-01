@@ -4,7 +4,30 @@ body {
 }
 
 h1, h2, h3, h4, hr, p, ul {
-	margin: 20px 0;
+	margin: 0 0 20px 0;
+}
+
+:link,
+:visited {
+	color: #017702;
+	text-decoration: none;
+}
+
+a:hover {
+	color: #ff4b33;
+}
+
+.key {
+	position: fixed;
+	top: 20px;
+	right: 20px;
+}
+
+.meta {
+	display: block;
+	margin-top: -20px;
+	color: #666;
+	font-size: 0.8em;
 }
 
 .variable-type,
@@ -32,11 +55,4 @@ h1, h2, h3, h4, hr, p, ul {
 	display: inline-block;
 	width: 200px;
 	text-align: right;
-}
-
-.key {
-	position: fixed;
-	top: 0;
-	right: 0;
-	width: 200px;
 }
