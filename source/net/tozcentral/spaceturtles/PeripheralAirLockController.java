@@ -92,6 +92,9 @@ public class PeripheralAirLockController extends PeripheralTileEntity implements
 			return new Object[] { airLockController.redstoneActivation };
 		if ( method.equals ( "setRedstoneActivation" ) )
 		{
+			if ( arguments.length != 1 || !(arguments[0] instanceof Boolean) )
+				throw new Exception("Expected boolean");
+				
 			airLockController.redstoneActivation = (Boolean) arguments[0];
 			return new Object[0];
 		}
@@ -101,6 +104,9 @@ public class PeripheralAirLockController extends PeripheralTileEntity implements
 			return new Object[] { airLockController.playerDistanceActivation };
 		if ( method.equals ( "setPlayerActivation" ) )
 		{
+			if ( arguments.length != 1 || !(arguments[0] instanceof Boolean) )
+				throw new Exception("Expected boolean");
+				
 			airLockController.playerDistanceActivation = (Boolean) arguments[0];
 			return new Object[0];
 		}
@@ -108,6 +114,9 @@ public class PeripheralAirLockController extends PeripheralTileEntity implements
 			return new Object[] { airLockController.playerDistanceSelection };
 		if ( method.equals ( "setPlayerDistance" ) )
 		{
+			if ( arguments.length != 1 || !(arguments[0] instanceof Integer) )
+				throw new Exception("Expected number");
+				
 			airLockController.playerDistanceSelection = (Integer) arguments[0];
 			return new Object[0];
 		}
@@ -115,6 +124,9 @@ public class PeripheralAirLockController extends PeripheralTileEntity implements
 			return new Object[] { airLockController.playerToOpenFor };
 		if ( method.equals ( "setPlayer" ) )
 		{
+			if ( arguments.length != 1 || !(arguments[0] instanceof String) )
+				throw new Exception("Expected string");
+				
 			airLockController.playerToOpenFor = (String) arguments[0];
 			return new Object[0];
 		}
@@ -124,6 +136,9 @@ public class PeripheralAirLockController extends PeripheralTileEntity implements
 			return new Object[] { airLockController.invertSelection };
 		if ( method.equals ( "setInvertSelection" ) )
 		{
+			if ( arguments.length != 1 || !(arguments[0] instanceof Boolean) )
+				throw new Exception("Expected boolean");
+				
 			airLockController.invertSelection = (Boolean) arguments[0];
 			return new Object[0];
 		}
@@ -133,6 +148,9 @@ public class PeripheralAirLockController extends PeripheralTileEntity implements
 			return new Object[] { airLockController.horizontalModeEnabled };
 		if ( method.equals ( "setHorizontal" ) )
 		{
+			if ( arguments.length != 1 || !(arguments[0] instanceof Boolean) )
+				throw new Exception("Expected boolean");
+				
 			airLockController.horizontalModeEnabled = (Boolean) arguments[0];
 			return new Object[0];
 		}
