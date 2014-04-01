@@ -1,5 +1,11 @@
 package net.tozcentral.spaceturtles;
 
+
+
+import micdoodle8.mods.galacticraft.core.blocks.GCCoreBlocks;
+import dan200.computercraft.api.turtle.ITurtleUpgrade;
+import java.lang.reflect.Method;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -70,21 +76,32 @@ public class SpaceTurtles
 	public static PeripheralTickHandler tickHandler = new PeripheralTickHandler ( );
 	
 	public static Logger logger;
-
-	@EventHandler
-	public void load(FMLInitializationEvent event)
-	{
-		logger = Logger.getLogger("MOD:ID");
-		logger.setParent(FMLLog.getLogger());
-		
-		ComputerCraftAPI.registerPeripheralProvider ( new PeripheralHandler() );
-		
-		TickRegistry.registerTickHandler ( tickHandler, Side.SERVER );
-	}
+	
+	public static int oxygenDetectorTurtleUpgradeId;
     
     @EventHandler
 	public void preInit(FMLPreInitializationEvent event)
 	{
+		logger = Logger.getLogger ( "MOD:ID" );
+		logger.setParent ( FMLLog.getLogger ( ) );
+		
+		Configuration config = new Configuration(event.getSuggestedConfigurationFile());
+		
+		new ConfigCategory("TurtleUpgrades");
+		
+		SpaceTurtles.oxygenDetectorTurtleUpgradeId = config.getItem("TurtleUpgrades", "oxygenDetectorId", 128).getInt(128);
+		
+		config.save();
+	}
+
+	@EventHandler
+	public void load(FMLInitializationEvent event)
+	{
+		ComputerCraftAPI.registerPeripheralProvider ( new PeripheralHandler ( ) );
+		
+		ComputerCraftAPI.registerTurtleUpgrade ( new TurtleOxygenDetector ( SpaceTurtles.oxygenDetectorTurtleUpgradeId ) );
+		
+		TickRegistry.registerTickHandler ( tickHandler, Side.SERVER );
 	}
     
     @EventHandler
@@ -93,6 +110,7 @@ public class SpaceTurtles
     }
     
     @EventHandler
-	public void postInit(FMLPostInitializationEvent event) {
+	public void postInit(FMLPostInitializationEvent event)
+	{
     }
 }
