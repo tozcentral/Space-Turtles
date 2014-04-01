@@ -1,0 +1,42 @@
+body {
+	margin: 20px 300px 20px 20px;
+	font-family: sans-serif;
+}
+
+h1, h2, h3, h4, hr, p, ul {
+	margin: 20px 0;
+}
+
+.variable-type,
+.return-type {
+	color: #0066ff;
+}
+
+.event-name {
+	color: #6200BD;
+}
+
+.function-name {
+	color: #0000a0;
+}
+
+.bracket {
+	font-weight: bold;
+}
+
+.variable-name {
+	font-style: italic;
+}
+
+.returns {
+	display: inline-block;
+	width: 200px;
+	text-align: right;
+}
+
+.key {
+	position: fixed;
+	top: 0;
+	right: 0;
+	width: 200px;
+}
