@@ -270,14 +270,14 @@
 
 	<target name="increment-build" unless="is-devel">
 		<propertyfile file="mod.properties">
-			<entry key="version.build" type="int" operation="+" default="1"/>
-			<entry key="version.devel" type="int" operation="=" default="1"/>
+			<entry key="version.build" type="int" operation="+" value="1" default="1"/>
+			<entry key="version.devel" type="int" operation="=" value="1" default="1"/>
 		</propertyfile>
 	</target>
 
 	<target name="increment-devel" if="is-devel">
 		<propertyfile file="mod.properties">
-			<entry key="version.devel" type="int" operation="+" default="1"/>
+			<entry key="version.devel" type="int" operation="+" value="1" default="1"/>
 		</propertyfile>
 	</target>
     
