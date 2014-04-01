@@ -55,6 +55,9 @@ public class PeripheralRefinery extends PeripheralElectric implements IPeriphera
 
 		if ( method.equals ( "setEnabled" ) )
 		{
+			if ( arguments.length != 1 || !(arguments[0] instanceof Boolean) )
+				throw new Exception("Expected boolean");
+				
 			this.refinery.setDisabled ( 0, !((Boolean)arguments[0]) );
 			return new Object[0];
 		}

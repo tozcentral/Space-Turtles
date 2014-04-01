@@ -133,6 +133,9 @@ public class PeripheralOxygenSealer extends PeripheralOxygen implements IPeriphe
 
 		if ( method.equals ( "setEnabled" ) )
 		{
+			if ( arguments.length != 1 || !(arguments[0] instanceof Boolean) )
+				throw new Exception("Expected boolean");
+				
 			this.oxygenSealer.setDisabled ( 0, !((Boolean)arguments[0]) );
 			return new Object[0];
 		}

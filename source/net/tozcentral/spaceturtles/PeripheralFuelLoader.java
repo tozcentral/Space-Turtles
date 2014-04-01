@@ -86,6 +86,9 @@ public class PeripheralFuelLoader extends PeripheralElectric implements IPeriphe
 
 		if ( method.equals ( "setEnabled" ) )
 		{
+			if ( arguments.length != 1 || !(arguments[0] instanceof Boolean) )
+				throw new Exception("Expected boolean");
+				
 			if ( this.fuelLoader.disableCooldown == 0 && !(this.fuelLoader.fuelTank.getFluid() == null || this.fuelLoader.fuelTank.getFluid().amount == 0) )
 				this.fuelLoader.setDisabled ( 0, !((Boolean)arguments[0]) );
 			return new Object[0];
