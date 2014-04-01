@@ -30,6 +30,11 @@ a:hover {
 	font-size: 0.8em;
 }
 
+.download {
+	display: inline-block;
+	margin: 0 10px;
+}
+
 .variable-type,
 .return-type {
 	color: #0066ff;
