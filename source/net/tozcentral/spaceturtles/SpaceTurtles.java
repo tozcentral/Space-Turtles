@@ -89,7 +89,7 @@ public class SpaceTurtles
 		
 		new ConfigCategory("TurtleUpgrades");
 		
-		SpaceTurtles.oxygenDetectorTurtleUpgradeId = config.getItem("TurtleUpgrades", "oxygenDetectorId", 128).getInt(128);
+		SpaceTurtles.oxygenDetectorTurtleUpgradeId = config.get("TurtleUpgrades", "oxygenDetectorId", 128).getInt(128);
 		
 		config.save();
 	}
