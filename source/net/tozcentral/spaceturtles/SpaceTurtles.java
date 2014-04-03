@@ -1,11 +1,5 @@
 package net.tozcentral.spaceturtles;
 
-
-
-import micdoodle8.mods.galacticraft.core.blocks.GCCoreBlocks;
-import dan200.computercraft.api.turtle.ITurtleUpgrade;
-import java.lang.reflect.Method;
-
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -33,6 +27,7 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.common.registry.TickRegistry;
+import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.relauncher.Side;
 
 import org.lwjgl.input.Keyboard;
@@ -62,6 +57,8 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.EntityInteractEvent;
 import net.minecraftforge.event.world.WorldEvent;
 
+import micdoodle8.mods.galacticraft.core.items.GCCoreItems;
+
 import dan200.computercraft.api.ComputerCraftAPI;
 
 @Mod(modid="MOD:ID", name="MOD:NAME", version="MOD:VERSION", dependencies = "required-after:ComputerCraft;required-after:GalacticraftCore;before:OpenPeripheralCore")
@@ -78,6 +75,11 @@ public class SpaceTurtles
 	public static Logger logger;
 	
 	public static int oxygenDetectorTurtleUpgradeId;
+	public static int launchPadInterfaceBlockId;
+	
+	public static Block launchPadInterface;
+	
+	public final static String ASSET_PREFIX = "MOD:ID:";
     
     @EventHandler
 	public void preInit(FMLPreInitializationEvent event)
@@ -90,6 +92,7 @@ public class SpaceTurtles
 		new ConfigCategory("TurtleUpgrades");
 		
 		SpaceTurtles.oxygenDetectorTurtleUpgradeId = config.get("TurtleUpgrades", "oxygenDetectorId", 128).getInt(128);
+		SpaceTurtles.launchPadInterfaceBlockId = config.getBlock("launchPadInterfaceId", 1234).getInt(1234);
 		
 		config.save();
 	}
@@ -97,6 +100,19 @@ public class SpaceTurtles
 	@EventHandler
 	public void load(FMLInitializationEvent event)
 	{
+		launchPadInterface = new BlockLaunchPadInterface ( SpaceTurtles.launchPadInterfaceBlockId, Material.ground ).setUnlocalizedName("launchPadInterface");
+
+		//LanguageRegistry.addName ( launchPadInterface, "Launch Pad" );
+			
+		GameRegistry.registerBlock ( launchPadInterface, "launchPadInterface" );
+		GameRegistry.registerTileEntity ( TileEntityLaunchPadInterface.class, "LaunchPadInterface" );
+		
+		GameRegistry.addRecipe (
+			new ItemStack ( SpaceTurtles.launchPadInterface ),
+			"www", "xyx", "zzz",
+			'w', new ItemStack ( GCCoreItems.basicItem, 1, 9 ), 'x', new ItemStack ( Block.stone, 1 ),
+			'y', new ItemStack ( Item.redstone, 1 ),            'z', new ItemStack ( GCCoreItems.basicItem, 1, 8 ) );
+		
 		ComputerCraftAPI.registerPeripheralProvider ( new PeripheralHandler ( ) );
 		
 		ComputerCraftAPI.registerTurtleUpgrade ( new TurtleOxygenDetector ( SpaceTurtles.oxygenDetectorTurtleUpgradeId ) );
