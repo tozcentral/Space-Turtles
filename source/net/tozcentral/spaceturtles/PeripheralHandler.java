@@ -22,6 +22,7 @@ import micdoodle8.mods.galacticraft.core.tile.GCCoreTileEntityOxygenSealer;
 import micdoodle8.mods.galacticraft.core.tile.GCCoreTileEntityRefinery;
 
 import micdoodle8.mods.galacticraft.mars.tile.GCMarsTileEntityLaunchController;
+import micdoodle8.mods.galacticraft.mars.tile.GCMarsTileEntityTerraformer;
 
 public final class PeripheralHandler implements IPeripheralProvider {
 
@@ -34,6 +35,9 @@ public final class PeripheralHandler implements IPeripheralProvider {
 		{
 			if ( tileEntity instanceof GCMarsTileEntityLaunchController )
 				return new PeripheralLaunchController ( (GCMarsTileEntityLaunchController) tileEntity, world, x, y, z );
+				
+			if ( tileEntity instanceof GCMarsTileEntityTerraformer )
+				return new PeripheralTerraformer ( (GCMarsTileEntityTerraformer) tileEntity, world, x, y, z );
 		}
 		
 		if ( tileEntity instanceof GCCoreTileEntityAirLockController )
